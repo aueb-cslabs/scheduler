@@ -32,6 +32,7 @@ func main() {
 	}
 	admins := parser.ReadFromFile(f, 5, 6)
 	sampleSize := 200000
+	model.CustomBlockRule = customBlockRules
 
 	pq := make(model.PriorityQueue, sampleSize)
 	for i := 0; i < sampleSize; i++ {

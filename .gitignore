@@ -4,4 +4,4 @@ pkg
 *.txt
 *.csv
 
-custom_rules.go
+src/aueb.gr/cslabs/scheduler/custom_rules
