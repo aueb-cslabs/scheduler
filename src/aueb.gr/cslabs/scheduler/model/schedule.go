@@ -29,6 +29,9 @@ func (schedule *Schedule) IsAdminAvailableAt(admin Admin, time DayTime, lab int)
 	if !ok {
 		return false
 	}
+
+	//Reserved for special patched rules
+
 	slot, ok := schedule.Slots[time.String()][admin.String()]
 	if ok && slot > 0 {
 		return false
