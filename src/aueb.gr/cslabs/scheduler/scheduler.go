@@ -12,6 +12,7 @@ import (
 	"math/rand"
 	"fmt"
 	"strconv"
+	"aueb.gr/cslabs/scheduler/custom_rules"
 )
 
 func main() {
@@ -26,13 +27,16 @@ func main() {
 		}
 	}
 
-	f, err := os.Open("test_schedule.csv")
+	f, err := os.Open(os.Args[1])
 	if err != nil {
 		panic(err.Error())
 	}
 	admins := parser.ReadFromFile(f, 5, 6)
-	sampleSize := 200000
-	model.CustomBlockRule = customBlockRules
+	sampleSize := 300000
+	model.CustomBlockRule = custom_rules.CustomBlockRules
+
+	timeStart := time.Now()
+	fmt.Println("Started calculations.")
 
 	pq := make(model.PriorityQueue, sampleSize)
 	for i := 0; i < sampleSize; i++ {
@@ -59,11 +63,13 @@ func main() {
 	best := heap.Pop(&pq).(*model.Schedule)
 	bestSchedule := *best
 
-	html := generator.GenerateHtml(bestSchedule, admins, times)
+	html := generator.GenerateHtml(bestSchedule, admins, times, 5)
 	err = ioutil.WriteFile("schedule.html", []byte(html), 0644)
 	if err != nil {
 		panic(err)
 	}
+
+	fmt.Println("\nScheduled generated in " + strconv.Itoa(int(time.Since(timeStart).Seconds())) + " seconds!")
 }
 
 func generateHeapFromChildren(times []model.DayTime, admins []model.Admin, pqOld model.PriorityQueue, currentSize int) (model.PriorityQueue, int) {

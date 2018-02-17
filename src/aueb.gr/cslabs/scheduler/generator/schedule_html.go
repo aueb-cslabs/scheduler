@@ -5,12 +5,21 @@ import (
 	"strconv"
 )
 
-func GenerateHtml(schedule model.Schedule, admins []model.Admin, times []model.DayTime) string {
+func GenerateHtml(schedule model.Schedule, admins []model.Admin, times []model.DayTime, dayLength int) string {
 	html := "<html><head><meta charset=\"UTF-8\"><link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css\">"
-	html += "<style>td {text-align: center;}</style>"
-	html += "</head><body><table class=table><tr><td></td>"
+	html += "<style>td {text-align: center;} @page { margin: 0; }</style>"
+	html += "</head><body><div class=\"p-4\"><table class=\"table table-bordered\"><tr><td></td>"
+
+	printedDay := 0
 	for _, time := range times {
-		html += "<td>" + strconv.Itoa(time.Day) + "-" + strconv.Itoa(time.Time) + "</td>"
+		if printedDay != time.Day {
+			printedDay = time.Day
+			html += "<td colspan=\"" + strconv.Itoa(dayLength) + "\">" + time.DayString() + "</td>"
+		}
+	}
+	html += "</tr><tr><td></td>"
+	for _, time := range times {
+		html += "<td>" + time.TimeString() + "</td>"
 	}
 	html += "</tr>"
 	for _, admin := range admins {
@@ -25,6 +34,6 @@ func GenerateHtml(schedule model.Schedule, admins []model.Admin, times []model.D
 		}
 		html += "</tr>"
 	}
-	html += "</table></body></html>"
+	html += "</table></div></body></html>"
 	return html
 }

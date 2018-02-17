@@ -3,5 +3,6 @@ pkg
 *.iml
 *.txt
 *.csv
+*.html
 
 src/aueb.gr/cslabs/scheduler/custom_rules

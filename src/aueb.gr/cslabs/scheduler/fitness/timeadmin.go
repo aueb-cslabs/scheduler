@@ -14,7 +14,7 @@ func calculateFTimeAdmin(schedule model.Schedule, time model.DayTime, lab int, a
 
 	//Calculate is already was in uni
 	if !time.IsStartOfDay() {
-		avail, ok := admin.Preferences[time.GetPreviousHour().String()]
+		avail, _ := admin.Preferences[time.GetPreviousHour().String()]
 		slot, ok := schedule.Slots[time.GetPreviousHour().String()][admin.String()]
 		if ok && slot == lab {
 			fit += FITNESS_SAME_LAB
@@ -24,11 +24,14 @@ func calculateFTimeAdmin(schedule model.Schedule, time model.DayTime, lab int, a
 			avail == model.LAB_IN_1_NO_PREF || avail == model.LAB_IN_2_NO_PREF {
 			fit += FITNESS_IN_AUEB
 			goto ScoreAvailability
+		} else if avail == model.UNABLE {
+			fit += FITNESS_WILL_BE_UNAVAILABLE
+			goto ScoreAvailability
 		}
 	}
 	//Calculate if will stay in uni
 	if !time.IsEndOfDay() {
-		avail, ok := admin.Preferences[time.GetNextHour().String()]
+		avail, _ := admin.Preferences[time.GetNextHour().String()]
 		slot, ok := schedule.Slots[time.GetNextHour().String()][admin.String()]
 		if ok && slot == lab {
 			fit += FITNESS_SAME_LAB
@@ -36,6 +39,8 @@ func calculateFTimeAdmin(schedule model.Schedule, time model.DayTime, lab int, a
 			avail == model.LAB_IN_1 || avail == model.LAB_IN_2 ||
 			avail == model.LAB_IN_1_NO_PREF || avail == model.LAB_IN_2_NO_PREF {
 			fit += FITNESS_IN_AUEB
+		} else if avail == model.UNABLE {
+			fit += FITNESS_WILL_BE_UNAVAILABLE
 		}
 	}
 
