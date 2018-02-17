@@ -16,16 +16,24 @@ func calculateHours(schedule model.Schedule, admins []model.Admin, times []model
 	for _, admin := range admins {
 		hours := 0
 		day := 0
+		startDay := 0
 		currentDay := 0
 		for _, time := range times {
 			slot, ok := schedule.Slots[time.String()][admin.String()]
+			if currentDay != time.Day {
+				currentDay = time.Day
+				day = 0
+				startDay = 0
+			}
 			if ok && slot > 0 {
 				hours++
-				if currentDay != time.Day {
-					currentDay = time.Day
-					day = 0
-				}
 				day++
+				if startDay == 0 {
+					startDay = day
+				}
+				if day - startDay > 3 {
+					fit += FITNESS_LONG_STAY
+				}
 			}
 			if day == 3 {
 				fit += FITNESS_MORE_THAN_2_HOURS

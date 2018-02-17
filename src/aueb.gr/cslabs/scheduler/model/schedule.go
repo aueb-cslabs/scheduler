@@ -5,6 +5,8 @@ import (
 	"strconv"
 )
 
+var CustomBlockRule func(admin Admin, time DayTime, lab int) bool
+
 type Schedule struct {
 	Depth int
 	//Date and Time/Administrator/Lab(0 for none)
@@ -31,6 +33,9 @@ func (schedule *Schedule) IsAdminAvailableAt(admin Admin, time DayTime, lab int)
 	}
 
 	//Reserved for special patched rules
+	if CustomBlockRule != nil && CustomBlockRule(admin, time, lab) {
+		return false
+	}
 
 	slot, ok := schedule.Slots[time.String()][admin.String()]
 	if ok && slot > 0 {

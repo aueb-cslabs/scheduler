@@ -3,3 +3,5 @@ pkg
 *.iml
 *.txt
 *.csv
+
+custom_rules.go
