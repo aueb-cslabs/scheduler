@@ -48,7 +48,7 @@ func main() {
 	}
 }
 
-func loadPrefsTimes() ([]model.DayHour, []model.Admin) {
+func loadPrefsTimes() ([]model.DayHour, []model.Admin, int) {
 	f, err := os.Open(*preferencesFile)
 	if err != nil {
 		panic(err.Error())
@@ -56,6 +56,7 @@ func loadPrefsTimes() ([]model.DayHour, []model.Admin) {
 	admins := parser.ParsePreferenceCSV(f, model.Config.PreferencesDays, model.Config.PreferencesDayLength)
 
 	//Create times that are to be filled
+	totalHours := 0
 	var times []model.DayHour
 	for day := model.Config.ScheduleFirstDay; day <= model.Config.ScheduleLastDay; day++ {
 		dayIgnored := intInSlice(day, model.Config.IgnoreDays)
@@ -64,9 +65,12 @@ func loadPrefsTimes() ([]model.DayHour, []model.Admin) {
 			ignored := dayIgnored || intInSlice(hour, model.Config.IgnoreHours) || dayTimeInSlice(dayTime, model.Config.IgnoreDayTimes)
 			dayTime.Ignored = ignored
 			times = append(times, dayTime)
+			if !ignored {
+				totalHours++
+			}
 		}
 	}
-	return times, admins
+	return times, admins, totalHours
 }
 
 func docs() {
@@ -76,7 +80,7 @@ func docs() {
 	}
 	schedule := model.Schedule{}
 	json.Unmarshal(dat, &schedule)
-	times, admins := loadPrefsTimes()
+	times, admins, _ := loadPrefsTimes()
 	generateDocs(schedule, admins, times)
 
 	fmt.Println("\nDocuments regenerated!")
@@ -94,7 +98,7 @@ func generate() {
 		panic("You did not provide a title! Exiting.")
 	}
 
-	times, admins := loadPrefsTimes()
+	times, admins, totalHours := loadPrefsTimes()
 
 	//Log time start
 	timeStart := time.Now()
@@ -102,15 +106,16 @@ func generate() {
 	//TODO Here you can specify the custom rules method
 	model.CustomBlockRule = custom_rules.CustomBlockRules
 
-	//Initializing schedule generator and
+	//Initializing schedule generator
 	sampleSize := 150000
+	fitness.HoursPerAdmin = len(admins) / totalHours
 	fmt.Println("Generating random schedules...")
 
 	pq := make(algorithm.PriorityQueue, sampleSize)
 	for i := 0; i < sampleSize; i++ {
 		schedule := algorithm.GenerateRandomSchedule(admins, times)
 		schedule.Index = i
-		schedule.Fitness = scorer.CalculateFitness(schedule, admins, times)
+		schedule.Fitness = fitness.CalculateFitness(schedule, admins, times)
 		pq[i] = &schedule
 
 		if i % 10000 == 0 && i != 0 {

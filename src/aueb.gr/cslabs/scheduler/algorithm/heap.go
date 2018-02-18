@@ -28,7 +28,7 @@ func GenerateNextHeap(times []model.DayHour, admins []model.Admin, pqOld Priorit
 		s1 := heap.Remove(&pqOld, s1Index).(*model.Schedule)
 		s2 := heap.Remove(&pqOld, s2Index).(*model.Schedule)
 		sChild := MateSchedules(times, *s1, *s2)
-		sChild.Fitness = scorer.CalculateFitness(sChild, admins, times)
+		sChild.Fitness = fitness.CalculateFitness(sChild, admins, times)
 
 		s1.Index = index
 		pq[index] = s1

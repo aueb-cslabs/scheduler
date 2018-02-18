@@ -1,6 +1,8 @@
-package scorer
+package fitness
 
 import "aueb.gr/cslabs/scheduler/model"
+
+var HoursPerAdmin = 0
 
 func max(a, b int) int {
 	if a > b {
@@ -11,8 +13,6 @@ func max(a, b int) int {
 
 func calculateHours(schedule model.Schedule, admins []model.Admin, times []model.DayHour) int {
 	fit := 0
-	hoursPerAdmin := len(times) * 2 / len(admins)
-
 	for _, admin := range admins {
 		hours := 0
 		day := 0
@@ -42,11 +42,11 @@ func calculateHours(schedule model.Schedule, admins []model.Admin, times []model
 				fit += FITNESS_MORE_THAN_3_HOURS
 			}
 		}
-		fit += max(0, hoursPerAdmin - hours) * FITNESS_LESS_HOURS_PER_HOUR
-		if hours - hoursPerAdmin > 2 {
-			fit += max(0, hours - hoursPerAdmin) * FITNESS_MORE_HOURS_PER_HOUR_AF2
+		fit += max(0, HoursPerAdmin - hours) * FITNESS_LESS_HOURS_PER_HOUR
+		if hours - HoursPerAdmin > 2 {
+			fit += max(0, hours - HoursPerAdmin) * FITNESS_MORE_HOURS_PER_HOUR_AF2
 		} else {
-			fit += max(0, hours - hoursPerAdmin) * FITNESS_MORE_HOURS_PER_HOUR
+			fit += max(0, hours - HoursPerAdmin) * FITNESS_MORE_HOURS_PER_HOUR
 		}
 	}
 

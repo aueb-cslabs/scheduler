@@ -1,4 +1,4 @@
-package scorer
+package fitness
 
 const FITNESS_SAME_LAB = 500
 const FITNESS_DIFFERENT_LAB = -600

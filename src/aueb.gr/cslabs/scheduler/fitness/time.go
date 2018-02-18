@@ -1,4 +1,4 @@
-package scorer
+package fitness
 
 import "aueb.gr/cslabs/scheduler/model"
 

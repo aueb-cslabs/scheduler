@@ -1,4 +1,4 @@
-package scorer
+package fitness
 
 import "aueb.gr/cslabs/scheduler/model"
 
@@ -10,6 +10,5 @@ func CalculateFitness(schedule model.Schedule, admins []model.Admin, times []mod
 		}
 	}
 	fit += calculateHours(schedule, admins, times)
-
 	return fit
 }
