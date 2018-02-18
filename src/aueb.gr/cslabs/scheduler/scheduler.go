@@ -11,12 +11,14 @@ import (
 	"math/rand"
 	"fmt"
 	"strconv"
-	"aueb.gr/cslabs/scheduler/custom_rules"
 	"aueb.gr/cslabs/scheduler/output"
 	"flag"
 	"encoding/json"
 	"io/ioutil"
 )
+
+//TODO Here you can import your custom rule set
+import "aueb.gr/cslabs/scheduler/custom_rules"
 
 var generateFlag = flag.Bool("generate", false, "generate a schedule")
 var docsFlag = flag.String("docs", "", "generate docs from existing")
@@ -83,9 +85,11 @@ func generate() {
 	//Log time start
 	timeStart := time.Now()
 
+	//TODO Here you can specify the custom rules method
+	model.CustomBlockRule = custom_rules.CustomBlockRules
+
 	//Initializing schedule generator and
 	sampleSize := 150000
-	model.CustomBlockRule = custom_rules.CustomBlockRules
 	fmt.Println("Generating random schedules...")
 
 	pq := make(algorithm.PriorityQueue, sampleSize)

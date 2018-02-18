@@ -2,7 +2,7 @@ package model
 
 import "strconv"
 
-var FirstDay = 2
+var FirstDay = 1
 var LastDay = 5
 var FirstHour = 2
 var LastHour = 6
