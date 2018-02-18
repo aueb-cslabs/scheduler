@@ -34,7 +34,7 @@ func generateHtmlCode(schedule model.Schedule, admins []model.Admin, times []mod
 	for _, time := range times {
 		if printedDay != time.Day {
 			printedDay = time.Day
-			html += "<td colspan=\"" + strconv.Itoa(dayLength) + "\">" + time.DayString() + "</td>"
+			html += "<td class=lead colspan=\"" + strconv.Itoa(dayLength) + "\">" + time.DayString() + "</td>"
 		}
 	}
 	html += "<td></td></tr><tr><td></td>"
@@ -44,7 +44,7 @@ func generateHtmlCode(schedule model.Schedule, admins []model.Admin, times []mod
 	html += "<td>Σύνολο</td></tr>"
 
 	for _, admin := range admins {
-		html += "<tr><td>" + admin.Name + "</td>"
+		html += "<tr><td class=lead>" + admin.Name + "</td>"
 		count := 0
 		for _, time := range times {
 			slot, ok := schedule.Slots[time.String()][admin.String()]
