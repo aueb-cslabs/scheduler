@@ -108,8 +108,8 @@ func generate() {
 
 	//Initializing schedule generator
 	sampleSize := 150000
-	fitness.HoursPerAdmin = (totalHours / len(admins)) * 2
-	fmt.Println("Hour per admin: " + strconv.Itoa(fitness.HoursPerAdmin))
+	fitness.HoursPerAdmin = (totalHours * 2) / len(admins)
+	fmt.Println("Hours per admin: " + strconv.Itoa(fitness.HoursPerAdmin))
 	fmt.Println("Generating random schedules...")
 
 	pq := make(algorithm.PriorityQueue, sampleSize)
