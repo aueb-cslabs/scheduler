@@ -6,7 +6,7 @@ import (
 	"aueb.gr/cslabs/scheduler/model"
 )
 
-func ReadFromFile(r io.Reader, days, dayLength int) []model.Admin {
+func ParsePreferenceCSV(r io.Reader, days, dayLength int) []model.Admin {
 
 	csvReader := csv.NewReader(r)
 	for {

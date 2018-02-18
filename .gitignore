@@ -1,8 +1,8 @@
 .idea
 pkg
 *.iml
-*.txt
+*.json
 *.csv
-*.html
+out
 
 src/aueb.gr/cslabs/scheduler/custom_rules

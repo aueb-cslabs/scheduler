@@ -4,22 +4,53 @@ import (
 	"aueb.gr/cslabs/scheduler/model"
 	"os"
 	"aueb.gr/cslabs/scheduler/parser"
-	"aueb.gr/cslabs/scheduler/generator"
+	"aueb.gr/cslabs/scheduler/algorithm"
 	"container/heap"
 	"aueb.gr/cslabs/scheduler/fitness"
-	"io/ioutil"
 	"time"
 	"math/rand"
 	"fmt"
 	"strconv"
 	"aueb.gr/cslabs/scheduler/custom_rules"
+	"aueb.gr/cslabs/scheduler/output"
+	"flag"
 )
 
+var generateFlag = flag.Bool("generate", false, "generate a schedule")
+
+var title = flag.String("title", "", "represents the title for the schedule")
+var preferencesFile = flag.String("prefs", "", "points to the file that contains the preferences in a CSV format")
+
 func main() {
+	flag.Parse()
 
-	s1 := rand.NewSource(time.Now().UnixNano())
-	generator.Generator = rand.New(s1)
+	if *generateFlag {
+		generate()
+	} else {
+		panic("No operation requested! Exiting.")
+	}
+}
 
+func generate() {
+	//Generate randomizer
+	seed := rand.NewSource(time.Now().UnixNano())
+	algorithm.Generator = rand.New(seed)
+
+	if preferencesFile == nil || *preferencesFile == "" {
+		panic("You did not provide a preferences file! Exiting.")
+	}
+	if title == nil || *title == "" {
+		panic("You did not provide a title! Exiting.")
+	}
+
+	//Parse preferences file
+	f, err := os.Open(*preferencesFile)
+	if err != nil {
+		panic(err.Error())
+	}
+	admins := parser.ParsePreferenceCSV(f, 5, 6)
+
+	//Create times that are to be filled
 	var times []model.DayTime
 	for day := model.FirstDay; day <= model.LastDay; day++ {
 		for hour := model.FirstHour; hour <= model.LastHour; hour++ {
@@ -27,85 +58,49 @@ func main() {
 		}
 	}
 
-	f, err := os.Open(os.Args[1])
-	if err != nil {
-		panic(err.Error())
-	}
-	admins := parser.ReadFromFile(f, 5, 6)
-	sampleSize := 300000
-	model.CustomBlockRule = custom_rules.CustomBlockRules
-
+	//Log time start
 	timeStart := time.Now()
-	fmt.Println("Started calculations.")
 
-	pq := make(model.PriorityQueue, sampleSize)
+	//Initializing schedule generator and
+	sampleSize := 100000
+	model.CustomBlockRule = custom_rules.CustomBlockRules
+	fmt.Println("Generating random schedules...")
+
+	pq := make(algorithm.PriorityQueue, sampleSize)
 	for i := 0; i < sampleSize; i++ {
-		schedule := generator.GenerateRandomSchedule(admins, times)
+		schedule := algorithm.GenerateRandomSchedule(admins, times)
 		schedule.Index = i
 		schedule.Fitness = scorer.CalculateFitness(schedule, admins, times)
 		pq[i] = &schedule
-		if i % 10000 == 0 {
+
+		if i % 10000 == 0 && i != 0 {
 			fmt.Println("Generated " + strconv.Itoa(i) + " random schedules...")
 		}
 	}
-	fmt.Println("Generated " + strconv.Itoa(sampleSize) + " random schedules!")
+	fmt.Println("Generated " + strconv.Itoa(sampleSize) + " random schedules!\n")
 	heap.Init(&pq)
 
+	//Generate children until heap size < 5
 	gen := 0
 	for ;sampleSize > 5; {
-		pq, sampleSize = generateHeapFromChildren(times, admins, pq, sampleSize)
-		fmt.Print("Generated the n" + strconv.Itoa(gen) + " generation! ")
+		pq, sampleSize = algorithm.GenerateNextHeap(times, admins, pq, sampleSize)
+		fmt.Print("Generated: \t" + strconv.Itoa(gen) + " gen \t")
 		bestNow := pq[pq.Len() - 1]
 		fmt.Println("(Best score now: " + strconv.Itoa(bestNow.Fitness)+ ")")
 		gen += 1
 	}
 
+	//Retrieve the best
 	best := heap.Pop(&pq).(*model.Schedule)
 	bestSchedule := *best
 
-	html := generator.GenerateHtml(bestSchedule, admins, times, 5)
-	err = ioutil.WriteFile("schedule.html", []byte(html), 0644)
+	//Save as PDF (or HTML if that fails) and JSON
+	err = output.GeneratePDF(*title, bestSchedule, admins, times, 5)
 	if err != nil {
-		panic(err)
+		fmt.Println(err.Error())
+		output.GenerateHtml(*title, bestSchedule, admins, times, 5)
 	}
+	output.GenerateJson(*title, bestSchedule)
 
-	fmt.Println("\nScheduled generated in " + strconv.Itoa(int(time.Since(timeStart).Seconds())) + " seconds!")
-}
-
-func generateHeapFromChildren(times []model.DayTime, admins []model.Admin, pqOld model.PriorityQueue, currentSize int) (model.PriorityQueue, int) {
-	matingSize := int(float64(currentSize) * 0.6)
-	staticMatingSize := matingSize
-	if matingSize % 2 == 1 {
-		matingSize--
-	}
-
-	newSize := matingSize + matingSize / 2
-	pq := make(model.PriorityQueue, newSize)
-	index := 0
-
-	for i := 0; i < staticMatingSize; i += 2 {
-		if matingSize < 2 {
-			break
-		}
-		s1Index := generator.Generator.Intn(matingSize)
-		s2Index := generator.Generator.Intn(matingSize)
-		s1 := heap.Remove(&pqOld, s1Index).(*model.Schedule)
-		s2 := heap.Remove(&pqOld, s2Index).(*model.Schedule)
-		sChild := generator.MateSchedules(times, *s1, *s2)
-		sChild.Fitness = scorer.CalculateFitness(sChild, admins, times)
-
-		s1.Index = index
-		pq[index] = s1
-		index++
-		s2.Index = index
-		pq[index] = s2
-		index++
-		sChild.Index = index
-		pq[index] = &sChild
-		index++
-		matingSize -= 2
-	}
-	heap.Init(&pq)
-
-	return pq, newSize
+	fmt.Println("\nSchedule generated in " + strconv.Itoa(int(time.Since(timeStart).Seconds())) + " seconds!")
 }

@@ -1,4 +1,4 @@
-package generator
+package algorithm
 
 import (
 	"aueb.gr/cslabs/scheduler/model"

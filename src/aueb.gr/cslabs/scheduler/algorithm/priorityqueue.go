@@ -1,6 +1,8 @@
-package model
+package algorithm
 
-type PriorityQueue []*Schedule
+import "aueb.gr/cslabs/scheduler/model"
+
+type PriorityQueue []*model.Schedule
 
 func (pq PriorityQueue) Len() int { return len(pq) }
 
@@ -17,7 +19,7 @@ func (pq PriorityQueue) Swap(i, j int) {
 
 func (pq *PriorityQueue) Push(x interface{}) {
 	n := len(*pq)
-	item := x.(*Schedule)
+	item := x.(*model.Schedule)
 	item.Index = n
 	*pq = append(*pq, item)
 }
