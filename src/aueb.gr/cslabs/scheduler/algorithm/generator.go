@@ -6,7 +6,6 @@ import (
 
 func GenerateRandomSchedule(admins []model.Admin, times []model.DayTime) model.Schedule {
 	schedule := model.Schedule{
-		Depth: 0,
 		Slots: make(map[string]map[string]int),
 	}
 

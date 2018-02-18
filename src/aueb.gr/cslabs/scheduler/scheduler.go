@@ -14,9 +14,12 @@ import (
 	"aueb.gr/cslabs/scheduler/custom_rules"
 	"aueb.gr/cslabs/scheduler/output"
 	"flag"
+	"encoding/json"
+	"io/ioutil"
 )
 
 var generateFlag = flag.Bool("generate", false, "generate a schedule")
+var docsFlag = flag.String("docs", "", "generate docs from existing")
 
 var title = flag.String("title", "", "represents the title for the schedule")
 var preferencesFile = flag.String("prefs", "", "points to the file that contains the preferences in a CSV format")
@@ -26,9 +29,41 @@ func main() {
 
 	if *generateFlag {
 		generate()
+	} else if *docsFlag != "" {
+		docs()
 	} else {
 		panic("No operation requested! Exiting.")
 	}
+}
+
+func loadPrefsTimes() ([]model.DayTime, []model.Admin) {
+	f, err := os.Open(*preferencesFile)
+	if err != nil {
+		panic(err.Error())
+	}
+	admins := parser.ParsePreferenceCSV(f, 5, 6)
+
+	//Create times that are to be filled
+	var times []model.DayTime
+	for day := model.FirstDay; day <= model.LastDay; day++ {
+		for hour := model.FirstHour; hour <= model.LastHour; hour++ {
+			times = append(times, model.DayTime{Day: day, Time: hour})
+		}
+	}
+	return times, admins
+}
+
+func docs() {
+	dat, err := ioutil.ReadFile(*docsFlag)
+	if err != nil {
+		panic(err.Error())
+	}
+	schedule := model.Schedule{}
+	json.Unmarshal(dat, &schedule)
+	times, admins := loadPrefsTimes()
+	generateDocs(schedule, admins, times)
+
+	fmt.Println("\nDocuments regenerated!")
 }
 
 func generate() {
@@ -43,26 +78,13 @@ func generate() {
 		panic("You did not provide a title! Exiting.")
 	}
 
-	//Parse preferences file
-	f, err := os.Open(*preferencesFile)
-	if err != nil {
-		panic(err.Error())
-	}
-	admins := parser.ParsePreferenceCSV(f, 5, 6)
-
-	//Create times that are to be filled
-	var times []model.DayTime
-	for day := model.FirstDay; day <= model.LastDay; day++ {
-		for hour := model.FirstHour; hour <= model.LastHour; hour++ {
-			times = append(times, model.DayTime{Day: day, Time: hour})
-		}
-	}
+	times, admins := loadPrefsTimes()
 
 	//Log time start
 	timeStart := time.Now()
 
 	//Initializing schedule generator and
-	sampleSize := 100000
+	sampleSize := 150000
 	model.CustomBlockRule = custom_rules.CustomBlockRules
 	fmt.Println("Generating random schedules...")
 
@@ -81,7 +103,7 @@ func generate() {
 	heap.Init(&pq)
 
 	//Generate children until heap size < 5
-	gen := 0
+	gen := 1
 	for ;sampleSize > 5; {
 		pq, sampleSize = algorithm.GenerateNextHeap(times, admins, pq, sampleSize)
 		fmt.Print("Generated: \t" + strconv.Itoa(gen) + " gen \t")
@@ -93,14 +115,19 @@ func generate() {
 	//Retrieve the best
 	best := heap.Pop(&pq).(*model.Schedule)
 	bestSchedule := *best
+	bestSchedule.Title = *title
 
 	//Save as PDF (or HTML if that fails) and JSON
-	err = output.GeneratePDF(*title, bestSchedule, admins, times, 5)
-	if err != nil {
-		fmt.Println(err.Error())
-		output.GenerateHtml(*title, bestSchedule, admins, times, 5)
-	}
-	output.GenerateJson(*title, bestSchedule)
+	generateDocs(bestSchedule, admins, times)
 
 	fmt.Println("\nSchedule generated in " + strconv.Itoa(int(time.Since(timeStart).Seconds())) + " seconds!")
+}
+
+func generateDocs(schedule model.Schedule, admins []model.Admin, times []model.DayTime) {
+	err := output.GeneratePDF(schedule, admins, times, 5)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	output.GenerateHtml(schedule, admins, times, 5)
+	output.GenerateJson(schedule)
 }

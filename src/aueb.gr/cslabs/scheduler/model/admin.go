@@ -5,6 +5,7 @@ import "encoding/json"
 type Admin struct {
 	Name string
 	Preferences map[string]Preference
+	Distance int
 }
 
 func (admin Admin) String() string {

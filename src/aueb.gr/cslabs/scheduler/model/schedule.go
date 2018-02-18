@@ -8,12 +8,12 @@ import (
 var CustomBlockRule func(admin Admin, time DayTime, lab int) bool
 
 type Schedule struct {
-	Depth int
+	Title string `json:"title"`
 	//Date and Time/Administrator/Lab(0 for none)
-	Slots map[string]map[string]int
+	Slots map[string]map[string]int `json:"slots"`
 
-	Index   int
-	Fitness int
+	Index   int `json:"-"`
+	Fitness int `json:"fitness"`
 }
 
 func (schedule *Schedule) AvailableAdminsAt(allAdmins []Admin, time DayTime, lab int) []Admin {

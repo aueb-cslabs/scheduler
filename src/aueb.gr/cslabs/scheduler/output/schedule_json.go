@@ -7,10 +7,10 @@ import (
 	"bufio"
 )
 
-func GenerateJson(title string, schedule model.Schedule) error {
+func GenerateJson(schedule model.Schedule) error {
 	prepareOutDir()
-	js, _ := json.Marshal(schedule)
-	f, err := os.Create("out/" + title + ".json")
+	js, _ := json.MarshalIndent(schedule, "", "\t")
+	f, err := os.Create(getOutputFile("json"))
 	if err != nil {
 		return err
 	}

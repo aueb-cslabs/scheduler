@@ -14,7 +14,6 @@ func min(a, b int) int {
 func MateSchedules(times []model.DayTime, schedule1 model.Schedule, schedule2 model.Schedule) model.Schedule {
 	splitPoint := Generator.Intn(len(times))
 	schedule := model.Schedule{
-		Depth: min(schedule1.Depth + 1, schedule2.Depth + 1),
 		Slots: make(map[string]map[string]int),
 	}
 

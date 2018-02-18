@@ -22,7 +22,7 @@ func calculateFTimeAdmin(schedule model.Schedule, time model.DayTime, lab int, a
 		} else if (ok && slot > 0) || avail == model.LESSON || avail == model.LESSON_ABLE ||
 			avail == model.LAB_IN_1 || avail == model.LAB_IN_2 ||
 			avail == model.LAB_IN_1_NO_PREF || avail == model.LAB_IN_2_NO_PREF {
-			fit += FITNESS_IN_AUEB
+			fit += FITNESS_IN_AUEB + FITNESS_IN_AUEB_MULT * admin.Distance
 			goto ScoreAvailability
 		} else if avail == model.UNABLE {
 			fit += FITNESS_WILL_BE_UNAVAILABLE
@@ -38,7 +38,7 @@ func calculateFTimeAdmin(schedule model.Schedule, time model.DayTime, lab int, a
 		} else if (ok && slot > 0) || avail == model.LESSON || avail == model.LESSON_ABLE ||
 			avail == model.LAB_IN_1 || avail == model.LAB_IN_2 ||
 			avail == model.LAB_IN_1_NO_PREF || avail == model.LAB_IN_2_NO_PREF {
-			fit += FITNESS_IN_AUEB
+			fit += FITNESS_IN_AUEB + FITNESS_IN_AUEB_MULT * admin.Distance
 		} else if avail == model.UNABLE {
 			fit += FITNESS_WILL_BE_UNAVAILABLE
 		}

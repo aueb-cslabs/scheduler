@@ -3,6 +3,7 @@ pkg
 *.iml
 *.json
 *.csv
+*.exe
 out
 
 src/aueb.gr/cslabs/scheduler/custom_rules
