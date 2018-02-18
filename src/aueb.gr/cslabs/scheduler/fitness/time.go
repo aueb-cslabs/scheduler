@@ -2,7 +2,7 @@ package scorer
 
 import "aueb.gr/cslabs/scheduler/model"
 
-func calculateFTime(schedule model.Schedule, admins []model.Admin, time model.DayTime, lab int) int {
+func calculateFTime(schedule model.Schedule, admins []model.Admin, time model.DayHour, lab int) int {
 	score := 0
 	if len(schedule.Slots[time.String()]) == 0 {
 		return 0

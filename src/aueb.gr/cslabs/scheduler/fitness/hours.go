@@ -9,7 +9,7 @@ func max(a, b int) int {
 	return b
 }
 
-func calculateHours(schedule model.Schedule, admins []model.Admin, times []model.DayTime) int {
+func calculateHours(schedule model.Schedule, admins []model.Admin, times []model.DayHour) int {
 	fit := 0
 	hoursPerAdmin := len(times) * 2 / len(admins)
 

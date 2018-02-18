@@ -11,7 +11,7 @@ func min(a, b int) int {
 	return b
 }
 
-func MateSchedules(times []model.DayTime, schedule1 model.Schedule, schedule2 model.Schedule) model.Schedule {
+func MateSchedules(times []model.DayHour, schedule1 model.Schedule, schedule2 model.Schedule) model.Schedule {
 	splitPoint := Generator.Intn(len(times))
 	schedule := model.Schedule{
 		Slots: make(map[string]map[string]int),

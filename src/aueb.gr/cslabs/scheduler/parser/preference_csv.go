@@ -28,7 +28,7 @@ func ParsePreferenceCSV(r io.Reader, days, dayLength int) []model.Admin {
 		for day := 1; day <= days; day++ {
 			for hour := 1; hour <= dayLength; hour++ {
 				if len(fields[slot]) > 0 {
-					admin.Preferences[model.DayTime{Day: day, Time: hour}.String()] = model.Preference(fields[slot])
+					admin.Preferences[model.DayHour{Day: day, Time: hour}.String()] = model.Preference(fields[slot])
 				}
 				slot++
 			}

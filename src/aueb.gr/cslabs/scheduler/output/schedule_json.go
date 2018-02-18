@@ -10,7 +10,7 @@ import (
 func GenerateJson(schedule model.Schedule) error {
 	prepareOutDir()
 	js, _ := json.MarshalIndent(schedule, "", "\t")
-	f, err := os.Create(getOutputFile("json"))
+	f, err := os.Create(getOutputFile("schedule","json"))
 	if err != nil {
 		return err
 	}

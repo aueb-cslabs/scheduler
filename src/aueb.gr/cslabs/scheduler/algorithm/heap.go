@@ -4,9 +4,10 @@ import (
 	"container/heap"
 	"aueb.gr/cslabs/scheduler/fitness"
 	"aueb.gr/cslabs/scheduler/model"
+	"math"
 )
 
-func GenerateNextHeap(times []model.DayTime, admins []model.Admin, pqOld PriorityQueue, currentSize int) (PriorityQueue, int) {
+func GenerateNextHeap(times []model.DayHour, admins []model.Admin, pqOld PriorityQueue, currentSize int) (PriorityQueue, int) {
 	matingSize := int(float64(currentSize) * 0.6)
 	staticMatingSize := matingSize
 	if matingSize % 2 == 1 {
@@ -21,8 +22,9 @@ func GenerateNextHeap(times []model.DayTime, admins []model.Admin, pqOld Priorit
 		if matingSize < 2 {
 			break
 		}
-		s1Index := Generator.Intn(matingSize)
-		s2Index := Generator.Intn(matingSize)
+		s1Index := int(math.Pow(Generator.Float64() * math.Cbrt(float64(matingSize)), 3))
+		s2Index := int(math.Pow(Generator.Float64() * math.Cbrt(float64(matingSize)), 3))
+
 		s1 := heap.Remove(&pqOld, s1Index).(*model.Schedule)
 		s2 := heap.Remove(&pqOld, s2Index).(*model.Schedule)
 		sChild := MateSchedules(times, *s1, *s2)

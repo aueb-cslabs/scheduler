@@ -25,9 +25,19 @@ var docsFlag = flag.String("docs", "", "generate docs from existing")
 
 var title = flag.String("title", "", "represents the title for the schedule")
 var preferencesFile = flag.String("prefs", "", "points to the file that contains the preferences in a CSV format")
+var configFile = flag.String("config", "config.json", "points to the config.json file")
 
 func main() {
+
 	flag.Parse()
+	config, err := ioutil.ReadFile(*configFile)
+	if err != nil {
+		panic(err.Error())
+	}
+	err = json.Unmarshal(config, &model.Config)
+	if err != nil {
+		panic(err.Error())
+	}
 
 	if *generateFlag {
 		generate()
@@ -38,18 +48,22 @@ func main() {
 	}
 }
 
-func loadPrefsTimes() ([]model.DayTime, []model.Admin) {
+func loadPrefsTimes() ([]model.DayHour, []model.Admin) {
 	f, err := os.Open(*preferencesFile)
 	if err != nil {
 		panic(err.Error())
 	}
-	admins := parser.ParsePreferenceCSV(f, 5, 6)
+	admins := parser.ParsePreferenceCSV(f, model.Config.PreferencesDays, model.Config.PreferencesDayLength)
 
 	//Create times that are to be filled
-	var times []model.DayTime
-	for day := model.FirstDay; day <= model.LastDay; day++ {
-		for hour := model.FirstHour; hour <= model.LastHour; hour++ {
-			times = append(times, model.DayTime{Day: day, Time: hour})
+	var times []model.DayHour
+	for day := model.Config.ScheduleFirstDay; day <= model.Config.ScheduleLastDay; day++ {
+		dayIgnored := intInSlice(day, model.Config.IgnoreDays)
+		for hour := model.Config.ScheduleFirstHour; hour <= model.Config.ScheduleLastHour; hour++ {
+			dayTime := model.DayHour{Day: day, Time: hour}
+			ignored := dayIgnored || intInSlice(hour, model.Config.IgnoreHours) || dayTimeInSlice(dayTime, model.Config.IgnoreDayTimes)
+			dayTime.Ignored = ignored
+			times = append(times, dayTime)
 		}
 	}
 	return times, admins
@@ -127,11 +141,34 @@ func generate() {
 	fmt.Println("\nSchedule generated in " + strconv.Itoa(int(time.Since(timeStart).Seconds())) + " seconds!")
 }
 
-func generateDocs(schedule model.Schedule, admins []model.Admin, times []model.DayTime) {
-	err := output.GeneratePDF(schedule, admins, times, 5)
+func generateDocs(schedule model.Schedule, admins []model.Admin, times []model.DayHour) {
+	err := output.GeneratePDF(schedule, admins, times, model.Config.ScheduleDayLength())
 	if err != nil {
 		fmt.Println(err.Error())
+		output.GenerateHtml(schedule, admins, times)
 	}
-	output.GenerateHtml(schedule, admins, times, 5)
+	err = output.GenerateOfficialPDF(schedule, admins, times, model.Config.ScheduleDayLength())
+	if err != nil {
+		fmt.Println(err.Error())
+		output.GenerateOfficialHtml(schedule, admins, times)
+	}
 	output.GenerateJson(schedule)
+}
+
+func intInSlice(a int, list []int) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
+}
+
+func dayTimeInSlice(a model.DayHour, list []model.DayHour) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
 }

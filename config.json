@@ -1,0 +1,11 @@
+{
+  "schedule_first_day": 1,
+  "schedule_last_day": 5,
+  "schedule_first_hour": 2,
+  "schedule_last_hour": 6,
+  "preferences_days": 5,
+  "preferences_day_length": 6,
+  "ignore_days": [],
+  "ignore_hours": [],
+  "ignore_day_times": []
+}

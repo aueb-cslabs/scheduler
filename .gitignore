@@ -1,7 +1,6 @@
 .idea
 pkg
 *.iml
-*.json
 *.csv
 *.exe
 out

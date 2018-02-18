@@ -5,7 +5,7 @@ import (
 )
 
 
-func calculateFTimeAdmin(schedule model.Schedule, time model.DayTime, lab int, admin model.Admin) int {
+func calculateFTimeAdmin(schedule model.Schedule, time model.DayHour, lab int, admin model.Admin) int {
 	fit := 0
 	slot, ok := schedule.Slots[time.String()][admin.String()]
 	if !ok || slot == 0 {
@@ -19,6 +19,8 @@ func calculateFTimeAdmin(schedule model.Schedule, time model.DayTime, lab int, a
 		if ok && slot == lab {
 			fit += FITNESS_SAME_LAB
 			goto ScoreAvailability
+		} else if ok && slot > 0 && slot != lab {
+			fit += FITNESS_DIFFERENT_LAB
 		} else if (ok && slot > 0) || avail == model.LESSON || avail == model.LESSON_ABLE ||
 			avail == model.LAB_IN_1 || avail == model.LAB_IN_2 ||
 			avail == model.LAB_IN_1_NO_PREF || avail == model.LAB_IN_2_NO_PREF {
@@ -35,6 +37,8 @@ func calculateFTimeAdmin(schedule model.Schedule, time model.DayTime, lab int, a
 		slot, ok := schedule.Slots[time.GetNextHour().String()][admin.String()]
 		if ok && slot == lab {
 			fit += FITNESS_SAME_LAB
+		} else if ok && slot > 0 && slot != lab {
+			fit += FITNESS_DIFFERENT_LAB
 		} else if (ok && slot > 0) || avail == model.LESSON || avail == model.LESSON_ABLE ||
 			avail == model.LAB_IN_1 || avail == model.LAB_IN_2 ||
 			avail == model.LAB_IN_1_NO_PREF || avail == model.LAB_IN_2_NO_PREF {

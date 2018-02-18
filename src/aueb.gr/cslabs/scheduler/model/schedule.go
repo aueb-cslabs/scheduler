@@ -5,7 +5,7 @@ import (
 	"strconv"
 )
 
-var CustomBlockRule func(admin Admin, time DayTime, lab int) bool
+var CustomBlockRule func(admin Admin, time DayHour, lab int) bool
 
 type Schedule struct {
 	Title string `json:"title"`
@@ -16,7 +16,7 @@ type Schedule struct {
 	Fitness int `json:"fitness"`
 }
 
-func (schedule *Schedule) AvailableAdminsAt(allAdmins []Admin, time DayTime, lab int) []Admin {
+func (schedule *Schedule) AvailableAdminsAt(allAdmins []Admin, time DayHour, lab int) []Admin {
 	var admins []Admin
 	for _, admin := range allAdmins {
 		if schedule.IsAdminAvailableAt(admin, time, lab) {
@@ -26,7 +26,7 @@ func (schedule *Schedule) AvailableAdminsAt(allAdmins []Admin, time DayTime, lab
 	return admins
 }
 
-func (schedule *Schedule) IsAdminAvailableAt(admin Admin, time DayTime, lab int) bool {
+func (schedule *Schedule) IsAdminAvailableAt(admin Admin, time DayHour, lab int) bool {
 	val, ok := admin.Preferences[time.String()]
 	if !ok {
 		return false
@@ -46,7 +46,7 @@ func (schedule *Schedule) IsAdminAvailableAt(admin Admin, time DayTime, lab int)
 			((val == LAB_IN_2 || val == LAB_IN_2_NO_PREF) && lab == 2)
 }
 
-func (schedule Schedule) Print(times []DayTime) {
+func (schedule Schedule) Print(times []DayHour) {
 	for _, time := range times {
 		fmt.Println(strconv.Itoa(time.Day) + ": " + strconv.Itoa(time.Time))
 		for admin, lab := range schedule.Slots[time.String()] {

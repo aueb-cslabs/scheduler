@@ -13,12 +13,15 @@ func prepareOutDir() {
 	}
 }
 
-func getOutputFile(ext string) string {
+func getOutputFile(pref string, ext string) string {
 	t := time.Now()
-	prefix := "out/out_" + t.Format("20060102") + "_"
+	prefix := "out/" + pref + "_" + t.Format("20060102") + "_"
 	for i := 1;; i++ {
 		name := prefix + strconv.Itoa(i) + "." + ext
 		if _, err := os.Stat(name); os.IsNotExist(err) {
+			if i == 1 {
+				return "out/" + pref + "_" + t.Format("20060102") + "." + ext
+			}
 			return name
 		}
 	}

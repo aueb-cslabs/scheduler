@@ -7,18 +7,18 @@ import (
 	"strings"
 )
 
-func GeneratePDF(schedule model.Schedule, admins []model.Admin, times []model.DayHour, dayLength int) error {
+func GenerateOfficialPDF(schedule model.Schedule, admins []model.Admin, times []model.DayHour, dayLength int) error {
 	pdfDoc, err := wkhtmltopdf.NewPDFGenerator()
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// Add one page from an URL
-	pdfDoc.AddPage(wkhtmltopdf.NewPageReader(strings.NewReader(generateHtmlCode(schedule, admins, times))))
+	pdfDoc.AddPage(wkhtmltopdf.NewPageReader(strings.NewReader(generateOfficialHtmlCode(schedule, admins, times))))
 	pdfDoc.Dpi.Set(600)
 	pdfDoc.NoCollate.Set(false)
-	pdfDoc.PageSize.Set(wkhtmltopdf.PageSizeA3)
-	pdfDoc.Orientation.Set(wkhtmltopdf.OrientationLandscape)
+	pdfDoc.PageSize.Set(wkhtmltopdf.PageSizeA4)
+	pdfDoc.Orientation.Set(wkhtmltopdf.OrientationPortrait)
 
 	pdfDoc.MarginTop.Set(12)
 	pdfDoc.MarginLeft.Set(12)
@@ -32,7 +32,7 @@ func GeneratePDF(schedule model.Schedule, admins []model.Admin, times []model.Da
 	}
 	// Write buffer contents to file on disk
 	prepareOutDir()
-	err = pdfDoc.WriteFile(getOutputFile("student","pdf"))
+	err = pdfDoc.WriteFile(getOutputFile("official","pdf"))
 	if err != nil {
 		return err
 	}
