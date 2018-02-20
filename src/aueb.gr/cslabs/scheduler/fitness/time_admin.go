@@ -4,7 +4,6 @@ import (
 	"aueb.gr/cslabs/scheduler/model"
 )
 
-
 func calculateFTimeAdmin(schedule model.Schedule, time model.DayHour, lab int, admin model.Admin) int {
 	fit := 0
 	slot, ok := schedule.Slots[time.String()][admin.String()]
@@ -17,17 +16,17 @@ func calculateFTimeAdmin(schedule model.Schedule, time model.DayHour, lab int, a
 		avail, _ := admin.Preferences[time.GetPreviousHour().String()]
 		slot, ok := schedule.Slots[time.GetPreviousHour().String()][admin.String()]
 		if ok && slot == lab {
-			fit += FITNESS_SAME_LAB
+			fit += fitnessSameLab
 			goto ScoreAvailability
 		} else if ok && slot > 0 && slot != lab {
-			fit += FITNESS_DIFFERENT_LAB
-		} else if (ok && slot > 0) || avail == model.LESSON || avail == model.LESSON_ABLE ||
-			avail == model.LAB_IN_1 || avail == model.LAB_IN_2 ||
-			avail == model.LAB_IN_1_NO_PREF || avail == model.LAB_IN_2_NO_PREF {
-			fit += FITNESS_IN_AUEB + FITNESS_IN_AUEB_MULT * admin.Distance
+			fit += fitnessDifferentLab
+		} else if (ok && slot > 0) || avail == model.Lesson || avail == model.LessonAble ||
+			avail == model.Request1 || avail == model.Request2 ||
+			avail == model.In1NotPreferable || avail == model.In2NotPreferable {
+			fit += fitnessInPremises + fitnessInPremisesDistanceMult*admin.Distance
 			goto ScoreAvailability
-		} else if avail == model.UNABLE {
-			fit += FITNESS_WILL_BE_UNAVAILABLE
+		} else if avail == model.NotAble {
+			fit += fitnessWillBeUnavailable
 			goto ScoreAvailability
 		}
 	}
@@ -36,15 +35,15 @@ func calculateFTimeAdmin(schedule model.Schedule, time model.DayHour, lab int, a
 		avail, _ := admin.Preferences[time.GetNextHour().String()]
 		slot, ok := schedule.Slots[time.GetNextHour().String()][admin.String()]
 		if ok && slot == lab {
-			fit += FITNESS_SAME_LAB
+			fit += fitnessSameLab
 		} else if ok && slot > 0 && slot != lab {
-			fit += FITNESS_DIFFERENT_LAB
-		} else if (ok && slot > 0) || avail == model.LESSON || avail == model.LESSON_ABLE ||
-			avail == model.LAB_IN_1 || avail == model.LAB_IN_2 ||
-			avail == model.LAB_IN_1_NO_PREF || avail == model.LAB_IN_2_NO_PREF {
-			fit += FITNESS_IN_AUEB + FITNESS_IN_AUEB_MULT * admin.Distance
-		} else if avail == model.UNABLE {
-			fit += FITNESS_WILL_BE_UNAVAILABLE
+			fit += fitnessDifferentLab
+		} else if (ok && slot > 0) || avail == model.Lesson || avail == model.LessonAble ||
+			avail == model.Request1 || avail == model.Request2 ||
+			avail == model.In1NotPreferable || avail == model.In2NotPreferable {
+			fit += fitnessInPremises + fitnessInPremisesDistanceMult*admin.Distance
+		} else if avail == model.NotAble {
+			fit += fitnessWillBeUnavailable
 		}
 	}
 
@@ -53,37 +52,37 @@ ScoreAvailability:
 
 	//Calculate based on availability
 	switch avail {
-	case model.ABLE:
-		fit += FITNESS_ABLE
+	case model.Able:
+		fit += fitnessAble
 		break
-	case model.ABLE_NOT_PREF:
-		fit += FITNESS_ABLE_NOT_PREF
+	case model.AbleNotPreferable:
+		fit += fitnessAbleNotPref
 		break
-	case model.ABLE_IF_NONE:
-		fit += FITNESS_ABLE_IF_NONE
+	case model.AbleIfNoneAvailable:
+		fit += fitnessAbleIfNone
 		break
-	case model.LAB_IN_1:
+	case model.Request1:
 		if lab == 1 {
-			fit += FITNESS_REQUESTED
+			fit += fitnessRequested
 		}
 		break
-	case model.LAB_IN_2:
+	case model.Request2:
 		if lab == 2 {
-			fit += FITNESS_REQUESTED
+			fit += fitnessRequested
 		}
 		break
-	case model.LAB_IN_1_NO_PREF:
+	case model.In1NotPreferable:
 		if lab == 1 {
-			fit += FITNESS_LAB_NOT_REQUESTED
+			fit += fitnessLabNotRequested
 		}
 		break
-	case model.LAB_IN_2_NO_PREF:
+	case model.In2NotPreferable:
 		if lab == 2 {
-			fit += FITNESS_LAB_NOT_REQUESTED
+			fit += fitnessLabNotRequested
 		}
 		break
-	case model.LESSON_ABLE:
-		fit += FITNESS_LESSON_NOT_REQUESTED
+	case model.LessonAble:
+		fit += fitnessLessonNotRequested
 	}
 	return fit
 }

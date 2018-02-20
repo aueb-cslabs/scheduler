@@ -1,9 +1,9 @@
 package parser
 
 import (
-	"io"
-	"encoding/csv"
 	"aueb.gr/cslabs/scheduler/model"
+	"encoding/csv"
+	"io"
 )
 
 func ParsePreferenceCSV(r io.Reader, days, dayLength int) []model.Admin {
@@ -23,12 +23,12 @@ func ParsePreferenceCSV(r io.Reader, days, dayLength int) []model.Admin {
 			break
 		}
 
-		admin := model.Admin{Name:fields[0], Preferences:make(map[string]model.Preference)}
+		admin := model.Admin{Name: fields[0], Preferences: make(map[string]model.Preference)}
 		slot := 1
 		for day := 1; day <= days; day++ {
 			for hour := 1; hour <= dayLength; hour++ {
 				if len(fields[slot]) > 0 {
-					admin.Preferences[model.DayHour{Day: day, Time: hour}.String()] = model.Preference(fields[slot])
+					admin.Preferences[model.DayHour{Day: day, Hour: hour}.String()] = model.Preference(fields[slot])
 				}
 				slot++
 			}

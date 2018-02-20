@@ -2,9 +2,9 @@ package output
 
 import (
 	"aueb.gr/cslabs/scheduler/model"
-	"strconv"
-	"os"
 	"bufio"
+	"os"
+	"strconv"
 )
 
 func GenerateHtml(schedule model.Schedule, admins []model.Admin, times []model.DayHour) error {

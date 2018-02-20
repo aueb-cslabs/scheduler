@@ -2,15 +2,15 @@ package output
 
 import (
 	"aueb.gr/cslabs/scheduler/model"
+	"bufio"
 	"encoding/json"
 	"os"
-	"bufio"
 )
 
 func GenerateJson(schedule model.Schedule) error {
 	prepareOutDir()
 	js, _ := json.MarshalIndent(schedule, "", "\t")
-	f, err := os.Create(getOutputFile("schedule","json"))
+	f, err := os.Create(getOutputFile("schedule", "json"))
 	if err != nil {
 		return err
 	}

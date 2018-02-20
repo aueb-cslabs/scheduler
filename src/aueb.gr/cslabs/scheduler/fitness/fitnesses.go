@@ -1,24 +1,28 @@
 package fitness
 
-const FITNESS_SAME_LAB = 500
-const FITNESS_DIFFERENT_LAB = -600
-const FITNESS_IN_AUEB = 100
-const FITNESS_IN_AUEB_MULT = 4
-const FITNESS_WILL_BE_UNAVAILABLE = -100
+//TODO Modify the following values to generate the best possible program.
 
-const FITNESS_REQUESTED = 3000
-const FITNESS_ABLE = 200
-const FITNESS_ABLE_NOT_PREF = 100
-const FITNESS_ABLE_IF_NONE = 50
+const fitnessSameLab = 500
+const fitnessDifferentLab = -200
+const fitnessInPremises = 400
+const fitnessInPremisesDistanceMult = 3
+const fitnessWillBeUnavailable = -500
 
-const FITNESS_LAB_NOT_REQUESTED = -10
-const FITNESS_LESSON_NOT_REQUESTED = -50
+const fitnessRequested = 500
+const fitnessAble = 200
+const fitnessAbleNotPref = 100
+const fitnessAbleIfNone = 80
 
-const FITNESS_MORE_THAN_2_HOURS = -200
-const FITNESS_MORE_THAN_3_HOURS = -500
-const FITNESS_LONG_STAY = -1000
-const FITNESS_MORE_HOURS_PER_HOUR = -600
-const FITNESS_MORE_HOURS_PER_HOUR_AF2 = -1200
-const FITNESS_LESS_HOURS_PER_HOUR = -500
+const fitnessLabNotRequested = -100
+const fitnessLessonNotRequested = -500
 
-const FITNESS_EMPTY_HOURS = -3000
+const fitnessDayInLabs = -150
+const fitnessMoreThan2Hours = -200
+const fitnessMoreThan3Hours = -500
+const fitnessLongStay = -1500
+const fitnessDayLongStay = -4000
+const fitnessMoreHoursPerHour = -500
+const fitnessMoreHoursPerHourAfter2 = -1000
+const fitnessLessHoursPerHour = -800
+
+const fitnessEmptyHours = -3000

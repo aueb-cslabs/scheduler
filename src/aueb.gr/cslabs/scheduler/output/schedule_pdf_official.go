@@ -1,8 +1,8 @@
 package output
 
 import (
-	"github.com/SebastiaanKlippert/go-wkhtmltopdf"
 	"aueb.gr/cslabs/scheduler/model"
+	"github.com/SebastiaanKlippert/go-wkhtmltopdf"
 	"log"
 	"strings"
 )
@@ -32,7 +32,7 @@ func GenerateOfficialPDF(schedule model.Schedule, admins []model.Admin, times []
 	}
 	// Write buffer contents to file on disk
 	prepareOutDir()
-	err = pdfDoc.WriteFile(getOutputFile("official","pdf"))
+	err = pdfDoc.WriteFile(getOutputFile("official", "pdf"))
 	if err != nil {
 		return err
 	}

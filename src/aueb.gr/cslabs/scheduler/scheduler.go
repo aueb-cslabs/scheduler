@@ -1,20 +1,20 @@
 package main
 
 import (
-	"aueb.gr/cslabs/scheduler/model"
-	"os"
-	"aueb.gr/cslabs/scheduler/parser"
 	"aueb.gr/cslabs/scheduler/algorithm"
-	"container/heap"
 	"aueb.gr/cslabs/scheduler/fitness"
-	"time"
-	"math/rand"
-	"fmt"
-	"strconv"
+	"aueb.gr/cslabs/scheduler/model"
 	"aueb.gr/cslabs/scheduler/output"
-	"flag"
+	"aueb.gr/cslabs/scheduler/parser"
+	"container/heap"
 	"encoding/json"
+	"flag"
+	"fmt"
 	"io/ioutil"
+	"math/rand"
+	"os"
+	"strconv"
+	"time"
 )
 
 //TODO Here you can import your custom rule set
@@ -61,7 +61,7 @@ func loadPrefsTimes() ([]model.DayHour, []model.Admin, int) {
 	for day := model.Config.ScheduleFirstDay; day <= model.Config.ScheduleLastDay; day++ {
 		dayIgnored := intInSlice(day, model.Config.IgnoreDays)
 		for hour := model.Config.ScheduleFirstHour; hour <= model.Config.ScheduleLastHour; hour++ {
-			dayTime := model.DayHour{Day: day, Time: hour}
+			dayTime := model.DayHour{Day: day, Hour: hour}
 			ignored := dayIgnored || intInSlice(hour, model.Config.IgnoreHours) || dayTimeInSlice(dayTime, model.Config.IgnoreDayTimes)
 			dayTime.Ignored = ignored
 			times = append(times, dayTime)
@@ -107,9 +107,9 @@ func generate() {
 	model.CustomBlockRule = custom_rules.CustomBlockRules
 
 	//Initializing schedule generator
-	sampleSize := 150000
-	fitness.HoursPerAdmin = (totalHours * 2) / len(admins)
-	fmt.Println("Hours per admin: " + strconv.Itoa(fitness.HoursPerAdmin))
+	sampleSize := 200000
+	fitness.HoursPerAdmin = float64(totalHours*2) / float64(len(admins))
+	fmt.Println("Hours per admin: " + strconv.FormatFloat(fitness.HoursPerAdmin, 'f', 6, 64))
 	fmt.Println("Generating random schedules...")
 
 	pq := make(algorithm.PriorityQueue, sampleSize)
@@ -119,7 +119,7 @@ func generate() {
 		schedule.Fitness = fitness.CalculateFitness(schedule, admins, times)
 		pq[i] = &schedule
 
-		if i % 10000 == 0 && i != 0 {
+		if i%10000 == 0 && i != 0 {
 			fmt.Println("Generated " + strconv.Itoa(i) + " random schedules...")
 		}
 	}
@@ -128,11 +128,11 @@ func generate() {
 
 	//Generate children until heap size < 5
 	gen := 1
-	for ;sampleSize > 5; {
+	for sampleSize > 5 {
 		pq, sampleSize = algorithm.GenerateNextHeap(times, admins, pq, sampleSize)
 		fmt.Print("Generated: \t" + strconv.Itoa(gen) + " gen \t")
-		bestNow := pq[pq.Len() - 1]
-		fmt.Println("(Best score now: " + strconv.Itoa(bestNow.Fitness)+ ")")
+		bestNow := pq[pq.Len()-1]
+		fmt.Println("(Best score now: " + strconv.Itoa(bestNow.Fitness) + ")")
 		gen += 1
 	}
 

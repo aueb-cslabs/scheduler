@@ -2,9 +2,9 @@ package output
 
 import (
 	"aueb.gr/cslabs/scheduler/model"
-	"strconv"
-	"os"
 	"bufio"
+	"os"
+	"strconv"
 )
 
 func GenerateOfficialHtml(schedule model.Schedule, admins []model.Admin, times []model.DayHour) error {
@@ -25,7 +25,7 @@ func GenerateOfficialHtml(schedule model.Schedule, admins []model.Admin, times [
 
 func generateOfficialHtmlCode(schedule model.Schedule, admins []model.Admin, times []model.DayHour) string {
 
-	colorCollection := []string{"bg-primary", "bg-warning", "bg-success"}
+	colorCollection := []string{"bg-primary text-light", "bg-warning", "bg-success"}
 
 	html := "<html><head><meta charset=\"UTF-8\"><link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css\">"
 	html += "<style>td, th {text-align: center;}</style>"
@@ -33,7 +33,7 @@ func generateOfficialHtmlCode(schedule model.Schedule, admins []model.Admin, tim
 	html += "<h2 class='mb-4'>" + schedule.Title + "</h2>"
 
 	for lab := 1; lab <= 2; lab++ {
-		html += "<table class='table table-bordered table-striped mb-4'><tr><th class='lead " + colorCollection[lab - 1] + "' colspan='" + strconv.Itoa(model.Config.ScheduleDays() + 1) + "'> CSLab " + strconv.Itoa(lab) + "</th></tr>"
+		html += "<table class='table table-bordered table-striped mb-4'><tr><th class='lead " + colorCollection[lab-1] + "' colspan='" + strconv.Itoa(model.Config.ScheduleDays()+1) + "'> CSLab " + strconv.Itoa(lab) + "</th></tr>"
 
 		printedDay := 0
 		html += "<tr><td></td>"
@@ -41,15 +41,15 @@ func generateOfficialHtmlCode(schedule model.Schedule, admins []model.Admin, tim
 
 			if printedDay != time.Day {
 				printedDay = time.Day
-				html += "<td>" + time.DayString() + "</td>"
+				html += "<th>" + time.DayString() + "</th>"
 			}
 		}
 		html += "</tr>"
 
 		for hour := model.Config.ScheduleFirstHour; hour <= model.Config.ScheduleLastHour; hour++ {
-			html += "<tr><td>" + model.DayHour{Day:0, Time: hour}.TimeString() + "</td>"
+			html += "<tr><th>" + model.DayHour{Day: 0, Hour: hour}.TimeString() + "</th>"
 			for day := model.Config.ScheduleFirstDay; day <= model.Config.ScheduleLastDay; day++ {
-				dayHour := model.DayHour{Day: day, Time: hour}
+				dayHour := model.DayHour{Day: day, Hour: hour}
 				admin := "-"
 				for _, adm := range admins {
 					slot, ok := schedule.Slots[dayHour.String()][adm.String()]

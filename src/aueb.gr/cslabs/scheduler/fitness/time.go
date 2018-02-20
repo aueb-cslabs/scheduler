@@ -12,4 +12,3 @@ func calculateFTime(schedule model.Schedule, admins []model.Admin, time model.Da
 	}
 	return score
 }
-

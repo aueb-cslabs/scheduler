@@ -1,10 +1,10 @@
 package output
 
 import (
-	"os"
 	_ "fmt"
-	"time"
+	"os"
 	"strconv"
+	"time"
 )
 
 func prepareOutDir() {
@@ -16,7 +16,7 @@ func prepareOutDir() {
 func getOutputFile(pref string, ext string) string {
 	t := time.Now()
 	prefix := "out/" + pref + "_" + t.Format("20060102") + "_"
-	for i := 1;; i++ {
+	for i := 1; ; i++ {
 		name := prefix + strconv.Itoa(i) + "." + ext
 		if _, err := os.Stat(name); os.IsNotExist(err) {
 			if i == 1 {

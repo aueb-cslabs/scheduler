@@ -3,9 +3,9 @@ package model
 import "encoding/json"
 
 type Admin struct {
-	Name string
+	Name        string
 	Preferences map[string]Preference
-	Distance int
+	Distance    int
 }
 
 func (admin Admin) String() string {
