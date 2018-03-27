@@ -18,7 +18,7 @@ import (
 )
 
 //TODO Here you can import your custom rule set
-import "aueb.gr/cslabs/scheduler/custom_rules"
+//import "aueb.gr/cslabs/scheduler/custom_rules"
 
 var generateFlag = flag.Bool("generate", false, "generate a schedule")
 var docsFlag = flag.String("docs", "", "generate docs from existing")
@@ -104,7 +104,7 @@ func generate() {
 	timeStart := time.Now()
 
 	//TODO Here you can specify the custom rules method
-	model.CustomBlockRule = custom_rules.CustomBlockRules
+	//model.CustomBlockRule = custom_rules.CustomBlockRules
 
 	//Initializing schedule generator
 	sampleSize := 200000
